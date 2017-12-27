@@ -790,8 +790,8 @@ export var GridLayer = Layer.extend({
 		DomUtil.addClass(tile, 'leaflet-tile');
 
 		var tileSize = this.getTileSize();
-		tile.style.width = tileSize.x + 'px';
-		tile.style.height = tileSize.y + 'px';
+		//tile.style.width = tileSize.x + 'px';
+		//tile.style.height = tileSize.y + 'px';
 
 		tile.onselectstart = Util.falseFn;
 		tile.onmousemove = Util.falseFn;

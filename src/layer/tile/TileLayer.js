@@ -35,6 +35,14 @@ import * as DomUtil from '../../dom/DomUtil';
  * ```
  */
 
+var transPng = 'data:image/png;base64,'+
+	'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAB3RJTUUH3QgIBToaSbAjlwAAABd0'+
+	'RVh0U29mdHdhcmUAR0xEUE5HIHZlciAzLjRxhaThAAAACHRwTkdHTEQzAAAAAEqAKR8AAAAEZ0FN'+
+	'QQAAsY8L/GEFAAAAA1BMVEX///+nxBvIAAAAAXRSTlMAQObYZgAAAFRJREFUeNrtwQEBAAAAgJD+'+
+	'r+4ICgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'+
+	'AAAAAAAAAAAAABgBDwABHHIJwwAAAABJRU5ErkJggg==';
+var tileSize = 256;
+var canvBase = '<canvas width="' + tileSize + '" height="' + tileSize + '" src="' + transPng + '"></canvas>';
 
 export var TileLayer = GridLayer.extend({
 
@@ -178,11 +186,21 @@ export var TileLayer = GridLayer.extend({
 	},
 
 	_tileOnLoad: function (done, tile) {
-		// For https://github.com/Leaflet/Leaflet/issues/3332
-		if (Browser.ielt9) {
-			setTimeout(Util.bind(done, this, null, tile), 0);
+		if ((tile.width !== tileSize || tile.height !== tileSize) && tile.src.indexOf('http') !== 0 ) {
+			var tmp = document.createElement('div');
+			tmp.innerHTML = canvBase;
+			var tCanv = tmp.childNodes[0];
+			var ctx = tCanv.getContext('2d');
+			ctx.drawImage(tile, 0, 0);
+			var dataUrl = tCanv.toDataURL();
+			tile.src = dataUrl;
 		} else {
-			done(null, tile);
+			// For https://github.com/Leaflet/Leaflet/issues/3332
+			if (Browser.ielt9) {
+				setTimeout(Util.bind(done, this, null, tile), 0);
+			} else {
+				done(null, tile);
+			}
 		}
 	},
 
